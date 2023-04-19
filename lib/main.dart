@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.orange,
       ),
       home: MyHomePage(),
     );
@@ -41,12 +41,33 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Consumer(
-                builder: (BuildContext context, WidgetRef ref, Widget? child) =>
-                    Text(ref.watch(massageProvider))),
+            Text(ref.watch(messageProvider)),
             Text(
-              ref.watch(_counterProvider).toString(),
+              ref.watch(CountDataProvider).count.toString(),
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                FloatingActionButton(
+                  onPressed: () => ref.read(CountDataProvider.notifier).state =
+                      ref.read(CountDataProvider).copyWith(),
+                  child: const Icon(Icons.bakery_dining),
+                ),
+                FloatingActionButton(
+                  onPressed: () => ref
+                      .read(_counterProvider.notifier)
+                      .update((state) => state + 1), //一時的なデータの取得なのでread
+                  child: const Icon(Icons.ramen_dining),
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(ref.watch(CountDataProvider).countUp.toString()),
+                Text(ref.watch(CountDataProvider).countDown.toString()),
+              ],
             ),
           ],
         ),
@@ -55,8 +76,8 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
         onPressed: () => ref
             .read(_counterProvider.notifier)
             .update((state) => state + 1), //一時的なデータの取得なのでread
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        tooltip: 'modoseruyo',
+        child: const Icon(Icons.cruelty_free),
       ),
     );
   }
