@@ -21,18 +21,21 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends ConsumerStatefulWidget {
   MyHomePage({super.key});
-  final _counterProvider = StateProvider<int>((ref) => 0);
 
+  @override
+  ConsumerState<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends ConsumerState<MyHomePage> {
+  final _counterProvider = StateProvider<int>((ref) => 0);
   @override
   Widget build(BuildContext context) {
     print("MyhomePage rebuild");
     return Scaffold(
       appBar: AppBar(
-        title: Consumer(
-            builder: (BuildContext context, WidgetRef ref, Widget? child) =>
-                Text(ref.watch(titleProvider))),
+        title: Text(ref.watch(titleProvider)),
       ),
       body: Center(
         child: Column(
@@ -41,25 +44,19 @@ class MyHomePage extends StatelessWidget {
             Consumer(
                 builder: (BuildContext context, WidgetRef ref, Widget? child) =>
                     Text(ref.watch(massageProvider))),
-            Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) =>
-                  Text(
-                ref.watch(_counterProvider).toString(),
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
+            Text(
+              ref.watch(_counterProvider).toString(),
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),
       ),
-      floatingActionButton: Consumer(
-        builder: (BuildContext context, WidgetRef ref, Widget? child) =>
-            FloatingActionButton(
-          onPressed: () => ref
-              .read(_counterProvider.notifier)
-              .update((state) => state + 1), //一時的なデータの取得なのでread
-          tooltip: 'Increment',
-          child: const Icon(Icons.add),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => ref
+            .read(_counterProvider.notifier)
+            .update((state) => state + 1), //一時的なデータの取得なのでread
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
       ),
     );
   }
