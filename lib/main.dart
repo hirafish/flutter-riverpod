@@ -21,34 +21,45 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends ConsumerWidget {
+class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
   final _counterProvider = StateProvider<int>((ref) => 0);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    print("MyhomePage rebuild");
     return Scaffold(
       appBar: AppBar(
-        title: Text(ref.watch(titleProvider)),
+        title: Consumer(
+            builder: (BuildContext context, WidgetRef ref, Widget? child) =>
+                Text(ref.watch(titleProvider))),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(ref.watch(massageProvider)),
-            Text(
-              ref.watch(_counterProvider).toString(),
-              style: Theme.of(context).textTheme.headlineMedium,
+            Consumer(
+                builder: (BuildContext context, WidgetRef ref, Widget? child) =>
+                    Text(ref.watch(massageProvider))),
+            Consumer(
+              builder: (BuildContext context, WidgetRef ref, Widget? child) =>
+                  Text(
+                ref.watch(_counterProvider).toString(),
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => ref
-            .read(_counterProvider.notifier)
-            .update((state) => state + 1), //一時的なデータの取得なのでread
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) =>
+            FloatingActionButton(
+          onPressed: () => ref
+              .read(_counterProvider.notifier)
+              .update((state) => state + 1), //一時的なデータの取得なのでread
+          tooltip: 'Increment',
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
