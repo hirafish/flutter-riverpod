@@ -16,19 +16,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends ConsumerWidget {
-  MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  int _counter = 0;
-
-  void _incrementCounter() {}
+  MyHomePage({super.key});
+  final _counterProvider = StateProvider<int>((ref) => 0);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,14 +37,16 @@ class MyHomePage extends ConsumerWidget {
           children: <Widget>[
             Text(ref.watch(massageProvider)),
             Text(
-              '$_counter',
+              ref.watch(_counterProvider).toString(),
               style: Theme.of(context).textTheme.headlineMedium,
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () => ref
+            .read(_counterProvider.notifier)
+            .update((state) => state + 1), //一時的なデータの取得なのでread
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
