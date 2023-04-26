@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_countup/provider.dart';
+import 'package:riverpod_countup/data/count_data.dart';
+import 'package:riverpod_countup/view_model.dart';
 
 void main() {
   runApp(ProviderScope(child: const MyApp()));
@@ -29,10 +31,17 @@ class MyHomePage extends ConsumerStatefulWidget {
 }
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
+  ViewModel _viewModel = ViewModel();
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel.setRef(ref);
+  }
+
   final _counterProvider = StateProvider<int>((ref) => 0);
   @override
   Widget build(BuildContext context) {
-    print("MyhomePage rebuild");
     return Scaffold(
       appBar: AppBar(
         title: Text(ref.watch(titleProvider)),
@@ -43,21 +52,18 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
           children: <Widget>[
             Text(ref.watch(messageProvider)),
             Text(
-              ref.watch(CountDataProvider).count.toString(),
+              _viewModel.count,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 FloatingActionButton(
-                  onPressed: () => ref.read(CountDataProvider.notifier).state =
-                      ref.read(CountDataProvider).copyWith(),
+                  onPressed: _viewModel.onIncrease,
                   child: const Icon(Icons.bakery_dining),
                 ),
                 FloatingActionButton(
-                  onPressed: () => ref
-                      .read(_counterProvider.notifier)
-                      .update((state) => state + 1), //一時的なデータの取得なのでread
+                  onPressed: _viewModel.onDecrease,
                   child: const Icon(Icons.ramen_dining),
                 )
               ],
@@ -65,17 +71,15 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(ref.watch(CountDataProvider).countUp.toString()),
-                Text(ref.watch(CountDataProvider).countDown.toString()),
+                Text(_viewModel.countUp),
+                Text(_viewModel.countDown),
               ],
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => ref
-            .read(_counterProvider.notifier)
-            .update((state) => state + 1), //一時的なデータの取得なのでread
+        onPressed: _viewModel.reset,
         tooltip: 'modoseruyo',
         child: const Icon(Icons.cruelty_free),
       ),
